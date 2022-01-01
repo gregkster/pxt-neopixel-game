@@ -33,10 +33,10 @@ namespace neopixelGame {
      * Creates a new NeoPixel sprite pointing to the right.
      * @param x sprite horizontal coordinate, eg: 2
      * @param y sprite vertical coordinate, eg: 2
-     * @param rgb color, eg: NeoPixelColors.Red
+     * @param rgb color
      */
     //% weight=60 blockGap=8
-    //% blockId=npg_create_sprite block="create sprite at|x: %x|y: %y| with color: %rgb"
+    //% blockId=npg_create_sprite block="create sprite at|x: %x|y: %y| with color: %rgb=neopixel_colors"
     //% rgb.defl=NeoPixelColors.Red
     //% blockSetVariable=sprite
     export function createSprite(x: number, y: number, rgb: number): NeoPixelSprite {
@@ -788,18 +788,23 @@ namespace neopixelGame {
         _size_x = size_x
         _size_y = size_y
         _strip.setMatrixWidth(size_x)
+       // make sure _sprites is initialized even if init() was never called
+       if (!_sprites) _sprites = (<NeoPixelSprite[]>[]);
+        basic.forever(() => {
+           basic.pause(30);
+           plot();
+           if (game.isGameOver()) {
+               basic.pause(600);
+           }
+        });
     }
 
     function init(): void {
-        if (_strip) return;
-        _sprites = (<NeoPixelSprite[]>[]);
-        basic.forever(() => {
-            basic.pause(30);
-            plot();
-            if (game.isGameOver()) {
-                basic.pause(600);
-            }
-        });
+        if (!_strip && !_sprites) {
+            _size_x = 20;
+            _size_y = 20;
+            _sprites = (<NeoPixelSprite[]>[]);
+        }
     }
 
     /**
