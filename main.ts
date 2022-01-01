@@ -1,4 +1,18 @@
-namespace neopixel_game {
+enum NeoPixelSpriteProperty {
+    //% block=x
+    X,
+    //% block=y
+    Y,
+    //% block=direction
+    Direction,
+    //% block=brightness
+    Brightness,
+    //% block=blink
+    Blink,
+    //% rgb=rgb
+    RGB
+}
+namespace neopixelGame {
     let _score: number = 0;
     let _life: number = 3;
     let _startTime: number = 0;
@@ -8,7 +22,7 @@ namespace neopixel_game {
     let _level: number = 1;
     let _gameId: number = 0;
     let _img: Image;
-    let _sprites: LedSprite[];
+    let _sprites: NeoPixelSprite[];
     let _paused: boolean = false;
     let _backgroundAnimation = false; // indicates if an auxiliary animation (and fiber) is already running
 
@@ -20,9 +34,9 @@ namespace neopixel_game {
     //% weight=60 blockGap=8 help=game/create-sprite
     //% blockId=game_create_sprite block="create sprite at|x: %x|y: %y"
     //% parts="ledmatrix"
-    export function createSprite(x: number, y: number): LedSprite {
+    export function createSprite(x: number, y: number, rgb: number): NeoPixelSprite {
         init();
-        let p = new LedSprite(x, y);
+        let p = new NeoPixelSprite(x, y, rgb);
         return p;
     }
 
@@ -309,20 +323,22 @@ namespace neopixel_game {
      * A game sprite rendered as a single LED
      */
     //%
-    export class LedSprite {
+    export class NeoPixelSprite {
         private _x: number;
         private _y: number;
         private _dir: number;
         private _brightness: number;
         private _blink: number;
         private _enabled: boolean;
+        private _rgb: number;
 
-        constructor(x: number, y: number) {
+        constructor(x: number, y: number, rgb: number) {
             this._x = Math.clamp(0, 4, x);
             this._y = Math.clamp(0, 4, y);
             this._dir = 90;
             this._brightness = 255;
             this._enabled = true;
+            this._rgb = rgb;
             init();
             _sprites.push(this);
             plot();
@@ -470,13 +486,14 @@ namespace neopixel_game {
          */
         //% weight=29 help=game/set
         //% blockId=game_sprite_set_property block="%sprite|set %property|to %value" blockGap=8
-        public set(property: LedSpriteProperty, value: number) {
+        public set(property: NeoPixelSpriteProperty, value: number) {
             switch (property) {
-                case LedSpriteProperty.X: this.setX(value); break;
-                case LedSpriteProperty.Y: this.setY(value); break;
-                case LedSpriteProperty.Direction: this.setDirection(value); break;
-                case LedSpriteProperty.Brightness: this.setBrightness(value); break;
-                case LedSpriteProperty.Blink: this.setBlink(value); break;
+                case NeoPixelSpriteProperty.X: this.setX(value); break;
+                case NeoPixelSpriteProperty.Y: this.setY(value); break;
+                case NeoPixelSpriteProperty.Direction: this.setDirection(value); break;
+                case NeoPixelSpriteProperty.Brightness: this.setBrightness(value); break;
+                case NeoPixelSpriteProperty.Blink: this.setBlink(value); break;
+                case NeoPixelSpriteProperty.RGB: this.setRGB(value); break;
             }
         }
 
@@ -487,13 +504,13 @@ namespace neopixel_game {
          */
         //% weight=30 help=game/change
         //% blockId=game_sprite_change_xy block="%sprite|change %property|by %value" blockGap=8
-        public change(property: LedSpriteProperty, value: number) {
+        public change(property: NeoPixelSpriteProperty, value: number) {
             switch (property) {
-                case LedSpriteProperty.X: this.changeXBy(value); break;
-                case LedSpriteProperty.Y: this.changeYBy(value); break;
-                case LedSpriteProperty.Direction: this.changeDirectionBy(value); break;
-                case LedSpriteProperty.Brightness: this.changeBrightnessBy(value); break;
-                case LedSpriteProperty.Blink: this.changeBlinkBy(value); break;
+                case NeoPixelSpriteProperty.X: this.changeXBy(value); break;
+                case NeoPixelSpriteProperty.Y: this.changeYBy(value); break;
+                case NeoPixelSpriteProperty.Direction: this.changeDirectionBy(value); break;
+                case NeoPixelSpriteProperty.Brightness: this.changeBrightnessBy(value); break;
+                case NeoPixelSpriteProperty.Blink: this.changeBlinkBy(value); break;
             }
         }
 
@@ -503,13 +520,13 @@ namespace neopixel_game {
          */
         //% weight=28 help=game/get
         //% blockId=game_sprite_property block="%sprite|%property"
-        public get(property: LedSpriteProperty) {
+        public get(property: NeoPixelSpriteProperty) {
             switch (property) {
-                case LedSpriteProperty.X: return this.x();
-                case LedSpriteProperty.Y: return this.y();
-                case LedSpriteProperty.Direction: return this.direction()
-                case LedSpriteProperty.Brightness: return this.brightness();
-                case LedSpriteProperty.Blink: return this.blink();
+                case NeoPixelSpriteProperty.X: return this.x();
+                case NeoPixelSpriteProperty.Y: return this.y();
+                case NeoPixelSpriteProperty.Direction: return this.direction()
+                case NeoPixelSpriteProperty.Brightness: return this.brightness();
+                case NeoPixelSpriteProperty.Blink: return this.blink();
                 default: return 0;
             }
         }
@@ -597,7 +614,7 @@ namespace neopixel_game {
          */
         //% weight=20 help=game/is-touching
         //% blockId=game_sprite_touching_sprite block="is %sprite|touching %other" blockGap=8
-        public isTouching(other: LedSprite): boolean {
+        public isTouching(other: NeoPixelSprite): boolean {
             return this._enabled && other._enabled && this._x == other._x && this._y == other._y;
         }
 
@@ -655,6 +672,27 @@ namespace neopixel_game {
          */
         public changeBrightnessBy(value: number): void {
             this.setBrightness(this._brightness + value);
+        }
+
+        /**
+         * Set the ``color`` of a sprite
+         * @param this the sprite
+         * @param rgb new RGB color value
+         */
+        //% parts="ledmatrix"
+        public setRGB(rgb: number): void {
+            this._rgb = rgb;
+            plot();
+        }
+
+        /**
+         * Reports the ``rgb`` color of a sprite on the LED screen
+         * @param this the sprite
+         */
+        //% parts="ledmatrix"
+        public RGB(): number {
+            let r: number;
+            return this._rgb;
         }
 
         /**
@@ -737,7 +775,7 @@ namespace neopixel_game {
 0 0 0 0 0
 0 0 0 0 0
 0 0 0 0 0`);
-        _sprites = (<LedSprite[]>[]);
+        _sprites = (<NeoPixelSprite[]>[]);
         basic.forever(() => {
             basic.pause(30);
             plot();
@@ -773,7 +811,7 @@ namespace neopixel_game {
      * Gets an invalid sprite; used to initialize locals.
      */
     //% weight=0
-    export function invalidSprite(): LedSprite {
+    export function invalidSprite(): NeoPixelSprite {
         return null;
     }
 
