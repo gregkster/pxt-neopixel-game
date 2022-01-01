@@ -1,6 +1,6 @@
 {
     "name": "neopixel-game",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "Just like Game, but drives an array of neopixels as its display",
     "license": "MIT",
     "dependencies": {
