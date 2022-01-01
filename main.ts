@@ -780,7 +780,7 @@ namespace neopixelGame {
      * @param mode neopixel mode (see NeoPixel docs)
      */
     //% parts="ledmatrix"
-    function initGame(size_x: number, size_y: number, pin: DigitalPin, mode: NeoPixelMode.RGB): void {
+    export function initGame(size_x: number, size_y: number, pin: DigitalPin, mode: NeoPixelMode.RGB): void {
         _strip = neopixel.create(pin, size_x * size_y, mode)
         _size_x = size_x
         _size_y = size_y
