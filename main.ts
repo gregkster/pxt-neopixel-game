@@ -12,6 +12,7 @@ enum NeoPixelSpriteProperty {
     //% rgb=rgb
     RGB
 }
+//% color=280 weight=10 icon="gamepad"
 namespace neopixelGame {
     let _score: number = 0;
     let _life: number = 3;
@@ -29,12 +30,13 @@ namespace neopixelGame {
     let _backgroundAnimation = false; // indicates if an auxiliary animation (and fiber) is already running
 
     /**
-     * Creates a new LED sprite pointing to the right.
+     * Creates a new NeoPixel sprite pointing to the right.
      * @param x sprite horizontal coordinate, eg: 2
      * @param y sprite vertical coordinate, eg: 2
+     * @param rgb color, eg: NeoPixelColors.Red
      */
     //% weight=60 blockGap=8 help=game/create-sprite
-    //% blockId=game_create_sprite block="create sprite at|x: %x|y: %y"
+    //% blockId=game_create_sprite block="create sprite at|x: %x|y: %y with rgb: %rgb"
     //% parts="ledmatrix"
     export function createSprite(x: number, y: number, rgb: number): NeoPixelSprite {
         init();
@@ -777,10 +779,13 @@ namespace neopixelGame {
      * @param size_x width of the neopixel game field
      * @param size_y height of the neopixel game field
      * @param pin microbit pin driving the neopixel matrix
-     * @param mode neopixel mode (see NeoPixel docs)
+     * @param mode neopixel mode (see NeoPixel docs) eg: NeoPixelMode.RGB_RGB
      */
-    //% parts="ledmatrix"
-    export function initGame(size_x: number, size_y: number, pin: DigitalPin, mode: NeoPixelMode.RGB): void {
+    //% weight=70 blockGap=8 help=init the game engine
+    //% block
+    //% mode.defl=NeoPixelMode.RGB_RGB size_x.defl=8 size_y.defl=8 pin.defl=DigitalPin.P0
+    //% parts="neopixel" advanced=true
+   export function initGame(size_x: number, size_y: number, pin: DigitalPin, mode: NeoPixelMode.RGB): void {
         _strip = neopixel.create(pin, size_x * size_y, mode)
         _size_x = size_x
         _size_y = size_y
@@ -802,7 +807,6 @@ namespace neopixelGame {
     /**
      * Plots the current sprites on the screen
      */
-    //% parts="ledmatrix"
     function plot(): void {
         if (game.isGameOver() || game.isPaused() || !_strip || _backgroundAnimation) {
             return;
