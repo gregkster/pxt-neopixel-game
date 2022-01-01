@@ -12,7 +12,7 @@ enum NeoPixelSpriteProperty {
     //% rgb=rgb
     RGB
 }
-//% color=280 weight=10 icon="gamepad"
+//% color=280 weight=10 icon="f11b"
 namespace neopixelGame {
     let _score: number = 0;
     let _life: number = 3;
@@ -36,8 +36,10 @@ namespace neopixelGame {
      * @param rgb color, eg: NeoPixelColors.Red
      */
     //% weight=60 blockGap=8 help=game/create-sprite
-    //% blockId=game_create_sprite block="create sprite at|x: %x|y: %y with rgb: %rgb"
-    //% parts="ledmatrix"
+    //% blockId=game_create_sprite block="create sprite at|x: %x|y: %y| with color: %rgb"
+    //% rgb.defl=NeoPixelColors.Red
+    //% blockSetVariable=sprite
+    //% parts="neopixel_matrix"
     export function createSprite(x: number, y: number, rgb: number): NeoPixelSprite {
         init();
         let p = new NeoPixelSprite(x, y, rgb);
@@ -782,9 +784,9 @@ namespace neopixelGame {
      * @param mode neopixel mode (see NeoPixel docs) eg: NeoPixelMode.RGB_RGB
      */
     //% weight=70 blockGap=8 help=init the game engine
-    //% block
-    //% mode.defl=NeoPixelMode.RGB_RGB size_x.defl=8 size_y.defl=8 pin.defl=DigitalPin.P0
-    //% parts="neopixel" advanced=true
+    //% blockId=init_game block="NeoPixelGame %size_x| by %size_y| at pin %pin|with neopixel mode %mode"
+    //% size_x.defl=8 size_y.defl=8
+    //% parts="neopixel_matrix"
    export function initGame(size_x: number, size_y: number, pin: DigitalPin, mode: NeoPixelMode.RGB): void {
         _strip = neopixel.create(pin, size_x * size_y, mode)
         _size_x = size_x
