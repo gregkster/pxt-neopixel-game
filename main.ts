@@ -12,7 +12,7 @@ enum NeoPixelSpriteProperty {
     //% rgb=rgb
     RGB
 }
-//% color=280 weight=10 icon="f11b"
+//% color=280 weight=10 icon="\uf11b"
 namespace neopixelGame {
     let _score: number = 0;
     let _life: number = 3;
@@ -35,11 +35,10 @@ namespace neopixelGame {
      * @param y sprite vertical coordinate, eg: 2
      * @param rgb color, eg: NeoPixelColors.Red
      */
-    //% weight=60 blockGap=8 help=game/create-sprite
-    //% blockId=game_create_sprite block="create sprite at|x: %x|y: %y| with color: %rgb"
+    //% weight=60 blockGap=8
+    //% blockId=npg_create_sprite block="create sprite at|x: %x|y: %y| with color: %rgb"
     //% rgb.defl=NeoPixelColors.Red
     //% blockSetVariable=sprite
-    //% parts="neopixel_matrix"
     export function createSprite(x: number, y: number, rgb: number): NeoPixelSprite {
         init();
         let p = new NeoPixelSprite(x, y, rgb);
@@ -49,8 +48,8 @@ namespace neopixelGame {
     /**
      * Gets the current score
      */
-    //% weight=9 help=game/score
-    //% blockId=game_score block="score" blockGap=8
+    //% weight=9
+    //% blockId=npg_game_score block="score" blockGap=8
     export function score(): number {
         return _score;
     }
@@ -59,9 +58,8 @@ namespace neopixelGame {
      * Adds points to the current score and shows an animation
      * @param points amount of points to change, eg: 1
      */
-    //% weight=10 help=game/add-score
-    //% blockId=game_add_score block="change score by|%points" blockGap=8
-    //% parts="ledmatrix"
+    //% weight=10
+    //% blockId=npg_game_add_score block="change score by|%points" blockGap=8
     export function addScore(points: number): void {
         setScore(_score + points);
         if (!_paused && !_backgroundAnimation) {
@@ -82,9 +80,8 @@ namespace neopixelGame {
      * Shows an animation, then starts a game countdown timer, which causes Game Over when it reaches 0
      * @param ms countdown duration in milliseconds, eg: 10000
      */
-    //% weight=9 help=game/start-countdown
-    //% blockId=game_start_countdown block="start countdown|(ms) %duration" blockGap=8
-    //% parts="ledmatrix"
+    //% weight=9
+    //% blockId=npg_start_countdown block="start countdown|(ms) %duration" blockGap=8
     export function startCountdown(ms: number): void {
         if (checkStart()) {
             basic.showAnimation(`1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0
@@ -106,8 +103,8 @@ namespace neopixelGame {
     /**
      * Displays a game over animation and the score.
      */
-    //% weight=8 help=game/game-over
-    //% blockId=game_game_over block="game over"
+    //% weight=8
+    //% blockId=npg_game_game_over block="game over"
     //% parts="ledmatrix"
     export function gameOver(): void {
         if (!_isGameOver) {
@@ -147,8 +144,8 @@ namespace neopixelGame {
      * Sets the current score value
      * @param value new score value.
      */
-    //% blockId=game_set_score block="set score %points" blockGap=8
-    //% weight=10 help=game/set-score
+    //% blockId=npg_game_set_score block="set score %points" blockGap=8
+    //% weight=10
     export function setScore(value: number): void {
         _score = Math.max(0, value);
     }
@@ -165,8 +162,8 @@ namespace neopixelGame {
      * Sets the current life value
      * @param value current life value
      */
-    //% weight=10 help=game/set-life
-    //% blockId=game_set_life block="set life %value" blockGap=8
+    //% weight=10
+    //% blockId=npg_game_set_life block="set life %value" blockGap=8
     export function setLife(value: number): void {
         _life = Math.max(0, value);
         if (_life <= 0) {
@@ -178,8 +175,8 @@ namespace neopixelGame {
      * Add life points to the current life amount
      * @param lives amount of lives to add
      */
-    //% weight=10 help=game/add-life
-    //% blockId=game_add_life block="add life %lives" blockGap=8
+    //% weight=10
+    //% blockId=npg_game_add_life block="add life %lives" blockGap=8
     export function addLife(lives: number): void {
         setLife(_life + lives);
     }
@@ -200,9 +197,9 @@ namespace neopixelGame {
      * Remove some life
      * @param life amount of life to remove
      */
-    //% weight=10 help=game/remove-life
+    //% weight=10
     //% parts="ledmatrix"
-    //% blockId=game_remove_life block="remove life %life" blockGap=8
+    //% blockId=npg_game_remove_life block="remove life %life" blockGap=8
     export function removeLife(life: number): void {
         setLife(_life - life);
         if (!_paused && !_backgroundAnimation) {
@@ -250,8 +247,8 @@ namespace neopixelGame {
     /**
      * Indicates if the game is still running. Returns `false` if the game is over or paused.
      */
-    //% weight=5 help=game/is-running
-    //% blockId=game_isrunning block="is running" blockGap=8
+    //% weight=5
+    //% blockId=npg_game_isrunning block="is running" blockGap=8
     export function isRunning(): boolean {
         return !_isGameOver && !_paused && !!_strip;
     }
@@ -270,8 +267,8 @@ namespace neopixelGame {
     /**
      * Indicates if the game is over and displaying the game over sequence.
      */
-    //% weight=7 help=game/is-game-over
-    //% blockId=game_isgameover block="is game over" blockGap=8
+    //% weight=7
+    //% blockId=npg_game_isgameover block="is game over" blockGap=8
     export function isGameOver(): boolean {
         return _isGameOver;
     }
@@ -279,8 +276,8 @@ namespace neopixelGame {
     /**
      * Indicates if the game rendering is paused to allow other animations
      */
-    //% weight=6 help=game/is-paused
-    //% blockId=game_ispaused block="is paused" blockGap=8
+    //% weight=6
+    //% blockId=npg_game_ispaused block="is paused" blockGap=8
     export function isPaused(): boolean {
         return _paused;
     }
@@ -288,8 +285,8 @@ namespace neopixelGame {
     /**
      * Pauses the game rendering engine to allow other animations
      */
-    //% blockId=game_pause block="pause"
-    //% advanced=true blockGap=8 help=game/pause
+    //% blockId=npg_game_pause block="pause"
+    //% advanced=true blockGap=8
     export function pause(): void {
         plot()
         _paused = true;
@@ -299,8 +296,8 @@ namespace neopixelGame {
     /**
      * Resumes the game rendering engine
      */
-    //% blockId=game_resume block="resume"
-    //% advanced=true blockGap=8 help=game/resumeP
+    //% blockId=npg_game_resume block="resume"
+    //% advanced=true blockGap=8
     export function resume(): void {
         _paused = false;
         plot();
@@ -355,8 +352,8 @@ namespace neopixelGame {
          * @param this the sprite to move
          * @param leds number of leds to move, eg: 1, -1
          */
-        //% weight=50 help=game/move
-        //% blockId=game_move_sprite block="%sprite|move by %leds" blockGap=8
+        //% weight=50
+        //% blockId=npg_game_move_sprite block="%sprite|move by %leds" blockGap=8
         //% parts="ledmatrix"
         public move(leds: number): void {
             if (this._dir == 0) {
@@ -404,8 +401,8 @@ namespace neopixelGame {
          * If touching the edge of the stage and facing towards it, then turn away.
          * @param this the sprite to check for bounce
          */
-        //% weight=18 help=game/if-on-edge-bounce
-        //% blockId=game_sprite_bounce block="%sprite|if on edge, bounce"
+        //% weight=18
+        //% blockId=npg_game_sprite_bounce block="%sprite|if on edge, bounce"
         //% parts="ledmatrix"
         public ifOnEdgeBounce(): void {
             if (this._dir == 0 && this._y == 0) {
@@ -458,8 +455,8 @@ namespace neopixelGame {
          * @param direction left or right
          * @param degrees angle in degrees to turn, eg: 45, 90, 180, 135
          */
-        //% weight=49 help=game/turn
-        //% blockId=game_turn_sprite block="%sprite|turn %direction|by (°) %degrees"
+        //% weight=49 
+        //% blockId=npg_game_turn_sprite block="%sprite|turn %direction|by (°) %degrees"
         public turn(direction: Direction, degrees: number) {
             if (direction == Direction.Right)
                 this.setDirection(this._dir + degrees);
@@ -490,8 +487,8 @@ namespace neopixelGame {
          * @param property the name of the property to change
          * @param the updated value
          */
-        //% weight=29 help=game/set
-        //% blockId=game_sprite_set_property block="%sprite|set %property|to %value" blockGap=8
+        //% weight=29
+        //% blockId=npg_game_sprite_set_property block="%sprite|set %property|to %value" blockGap=8
         public set(property: NeoPixelSpriteProperty, value: number) {
             switch (property) {
                 case NeoPixelSpriteProperty.X: this.setX(value); break;
@@ -508,8 +505,8 @@ namespace neopixelGame {
          * @param property the name of the property to change
          * @param value amount of change, eg: 1
          */
-        //% weight=30 help=game/change
-        //% blockId=game_sprite_change_xy block="%sprite|change %property|by %value" blockGap=8
+        //% weight=30
+        //% blockId=npg_game_sprite_change_xy block="%sprite|change %property|by %value" blockGap=8
         public change(property: NeoPixelSpriteProperty, value: number) {
             switch (property) {
                 case NeoPixelSpriteProperty.X: this.changeXBy(value); break;
@@ -524,8 +521,8 @@ namespace neopixelGame {
          * Gets a property of the sprite
          * @param property the name of the property to change
          */
-        //% weight=28 help=game/get
-        //% blockId=game_sprite_property block="%sprite|%property"
+        //% weight=28
+        //% blockId=npg_game_sprite_property block="%sprite|%property"
         public get(property: NeoPixelSpriteProperty) {
             switch (property) {
                 case NeoPixelSpriteProperty.X: return this.x();
@@ -619,8 +616,8 @@ namespace neopixelGame {
          * @param this the sprite to check overlap or touch
          * @param other the other sprite to check overlap or touch
          */
-        //% weight=20 help=game/is-touching
-        //% blockId=game_sprite_touching_sprite block="is %sprite|touching %other" blockGap=8
+        //% weight=20
+        //% blockId=npg_game_sprite_touching_sprite block="is %sprite|touching %other" blockGap=8
         public isTouching(other: NeoPixelSprite): boolean {
             return this._enabled && other._enabled && this._x == other._x && this._y == other._y;
         }
@@ -629,8 +626,8 @@ namespace neopixelGame {
          * Reports true if sprite is touching an edge
          * @param this the sprite to check for an edge contact
          */
-        //% weight=19 help=game/is-touching-edge
-        //% blockId=game_sprite_touching_edge block="is %sprite|touching edge" blockGap=8
+        //% weight=19
+        //% blockId=npg_game_sprite_touching_edge block="is %sprite|touching edge" blockGap=8
         public isTouchingEdge(): boolean {
             return this._enabled && (this._x == 0 || this._x == _size_x || this._y == 0 || this._y == _size_y);
         }
@@ -715,8 +712,8 @@ namespace neopixelGame {
          * Deletes the sprite from the game engine. The sprite will no longer appear on the screen or interact with other sprites.
          * @param this sprite to delete
          */
-        //% weight=59 blockGap=8 help=game/delete
-        //% blockId="game_delete_sprite" block="delete %this(sprite)"
+        //% weight=59 blockGap=8
+        //% blockId="npg_game_delete_sprite" block="delete %this(sprite)"
         public delete(): void {
             this._enabled = false;
             if (_sprites.removeElement(this))
@@ -726,8 +723,8 @@ namespace neopixelGame {
         /**
          * Reports whether the sprite has been deleted from the game engine.
          */
-        //% weight=58 help=game/is-deleted
-        //% blockId="game_sprite_is_deleted" block="is %sprite|deleted"
+        //% weight=58
+        //% blockId="npg_game_sprite_is_deleted" block="is %sprite|deleted"
         public isDeleted(): boolean {
             return !this._enabled;
         }
@@ -781,13 +778,12 @@ namespace neopixelGame {
      * @param size_x width of the neopixel game field
      * @param size_y height of the neopixel game field
      * @param pin microbit pin driving the neopixel matrix
-     * @param mode neopixel mode (see NeoPixel docs) eg: NeoPixelMode.RGB_RGB
+     * @param mode neopixel mode (see NeoPixel docs)
      */
-    //% weight=70 blockGap=8 help=init the game engine
-    //% blockId=init_game block="NeoPixelGame %size_x| by %size_y| at pin %pin|with neopixel mode %mode"
+    //% weight=70
+    //% blockId=npg_init_game block="Set %size_x| by %size_y| at pin %pin|with neopixel mode %mode"
     //% size_x.defl=8 size_y.defl=8
-    //% parts="neopixel_matrix"
-   export function initGame(size_x: number, size_y: number, pin: DigitalPin, mode: NeoPixelMode.RGB): void {
+   export function initGame(size_x: number, size_y: number, pin: DigitalPin, mode: NeoPixelMode): void {
         _strip = neopixel.create(pin, size_x * size_y, mode)
         _size_x = size_x
         _size_y = size_y
