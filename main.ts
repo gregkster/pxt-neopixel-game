@@ -783,6 +783,7 @@ namespace neopixelGame {
     //% weight=70
     //% blockId=npg_init_game block="Set %size_x| by %size_y| at pin %pin|with neopixel mode %mode"
     //% size_x.defl=8 size_y.defl=8
+    //% parts="neopixel"
    export function initGame(size_x: number, size_y: number, pin: DigitalPin, mode: NeoPixelMode): void {
         _strip = neopixel.create(pin, size_x * size_y, mode)
         _size_x = size_x
