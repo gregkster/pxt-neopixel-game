@@ -39,6 +39,7 @@ namespace neopixelGame {
     //% blockId=npg_create_sprite block="create sprite at|x: %x|y: %y| with color: %rgb=neopixel_colors"
     //% rgb.defl=NeoPixelColors.Red
     //% blockSetVariable=sprite
+    //% parts="neopixel"
     export function createSprite(x: number, y: number, rgb: number): NeoPixelSprite {
         init();
         let p = new NeoPixelSprite(x, y, rgb);
@@ -354,7 +355,7 @@ namespace neopixelGame {
          */
         //% weight=50
         //% blockId=npg_game_move_sprite block="%sprite|move by %leds" blockGap=8
-        //% parts="ledmatrix"
+        //% parts="neopixel"
         public move(leds: number): void {
             if (this._dir == 0) {
                 this._y = this._y - leds;
@@ -388,7 +389,7 @@ namespace neopixelGame {
          * @param x TODO
          * @param y TODO
          */
-        //% parts="ledmatrix"
+        //% parts="neopixel"
         public goTo(x: number, y: number): void {
             this._x = x;
             this._y = y;
@@ -403,7 +404,7 @@ namespace neopixelGame {
          */
         //% weight=18
         //% blockId=npg_game_sprite_bounce block="%sprite|if on edge, bounce"
-        //% parts="ledmatrix"
+        //% parts="neopixel"
         public ifOnEdgeBounce(): void {
             if (this._dir == 0 && this._y == 0) {
                 this._dir = 180;
@@ -457,6 +458,7 @@ namespace neopixelGame {
          */
         //% weight=49 
         //% blockId=npg_game_turn_sprite block="%sprite|turn %direction|by (°) %degrees"
+        //% parts="neopixel"
         public turn(direction: Direction, degrees: number) {
             if (direction == Direction.Right)
                 this.setDirection(this._dir + degrees);
@@ -489,6 +491,7 @@ namespace neopixelGame {
          */
         //% weight=29
         //% blockId=npg_game_sprite_set_property block="%sprite|set %property|to %value" blockGap=8
+        //% parts="neopixel"
         public set(property: NeoPixelSpriteProperty, value: number) {
             switch (property) {
                 case NeoPixelSpriteProperty.X: this.setX(value); break;
@@ -540,7 +543,7 @@ namespace neopixelGame {
          * @param this the sprite to set direction for
          * @param degrees new direction in degrees
          */
-        //% parts="ledmatrix"
+        //% parts="neopixel"
         public setDirection(degrees: number): void {
             this._dir = (Math.floor(degrees / 45) % 8) * 45;
             if (this._dir <= -180) {
@@ -653,7 +656,6 @@ namespace neopixelGame {
          * @param this the sprite
          * @param brightness the brightness from 0 (off) to 255 (on), eg: 255.
          */
-        //% parts="ledmatrix"
         public setBrightness(brightness: number): void {
             this._brightness = Math.clamp(0, 255, brightness);
             plot();
@@ -663,7 +665,6 @@ namespace neopixelGame {
          * Reports the ``brightness` of a sprite on the LED screen
          * @param this the sprite
          */
-        //% parts="ledmatrix"
         public brightness(): number {
             let r: number;
             return this._brightness;
@@ -683,7 +684,7 @@ namespace neopixelGame {
          * @param this the sprite
          * @param rgb new RGB color value
          */
-        //% parts="ledmatrix"
+        //% parts="neopixel"
         public setRGB(rgb: number): void {
             this._rgb = rgb;
             plot();
@@ -693,7 +694,7 @@ namespace neopixelGame {
          * Reports the ``rgb`` color of a sprite on the LED screen
          * @param this the sprite
          */
-        //% parts="ledmatrix"
+        //% parts="neopixel"
         public RGB(): number {
             let r: number;
             return this._rgb;
@@ -756,7 +757,7 @@ namespace neopixelGame {
         }
 
         //% weight=-1
-        //% parts="ledmatrix"
+        //% parts="neopixel"
         public _plot(now: number) {
             let ps = this
             if (ps._rgb > 0) {
