@@ -21,7 +21,9 @@ namespace neopixelGame {
     let _countdownPause: number = 0;
     let _level: number = 1;
     let _gameId: number = 0;
-    let _img: Image;
+    let _strip: neopixel.Strip;
+    let _size_x: number;
+    let _size_y: number;
     let _sprites: NeoPixelSprite[];
     let _paused: boolean = false;
     let _backgroundAnimation = false; // indicates if an auxiliary animation (and fiber) is already running
@@ -247,7 +249,7 @@ namespace neopixelGame {
     //% weight=5 help=game/is-running
     //% blockId=game_isrunning block="is running" blockGap=8
     export function isRunning(): boolean {
-        return !_isGameOver && !_paused && !!_img;
+        return !_isGameOver && !_paused && !!_strip;
     }
 
     /**
@@ -333,8 +335,8 @@ namespace neopixelGame {
         private _rgb: number;
 
         constructor(x: number, y: number, rgb: number) {
-            this._x = Math.clamp(0, 4, x);
-            this._y = Math.clamp(0, 4, y);
+            this._x = Math.clamp(0, _size_x, x);
+            this._y = Math.clamp(0, _size_y, y);
             this._dir = 90;
             this._brightness = 255;
             this._enabled = true;
@@ -374,8 +376,8 @@ namespace neopixelGame {
                 this._x = this._x - leds;
                 this._y = this._y + leds;
             }
-            this._x = Math.clamp(0, 4, this._x);
-            this._y = Math.clamp(0, 4, this._y);
+            this._x = Math.clamp(0, _size_x, this._x);
+            this._y = Math.clamp(0, _size_y, this._y);
             plot();
         }
 
@@ -389,8 +391,8 @@ namespace neopixelGame {
         public goTo(x: number, y: number): void {
             this._x = x;
             this._y = y;
-            this._x = Math.clamp(0, 4, this._x);
-            this._y = Math.clamp(0, 4, this._y);
+            this._x = Math.clamp(0, _size_x, this._x);
+            this._y = Math.clamp(0, _size_y, this._y);
             plot();
         }
 
@@ -404,7 +406,7 @@ namespace neopixelGame {
         public ifOnEdgeBounce(): void {
             if (this._dir == 0 && this._y == 0) {
                 this._dir = 180;
-            } else if (this._dir == 45 && (this._x == 4 || this._y == 0)) {
+            } else if (this._dir == 45 && (this._x == _size_x || this._y == 0)) {
                 if (this._x == 0 && this._y == 0) {
                     this._dir = -135;
                 } else if (this._y == 0) {
@@ -412,17 +414,17 @@ namespace neopixelGame {
                 } else {
                     this._dir = -45;
                 }
-            } else if (this._dir == 90 && this._x == 4) {
+            } else if (this._dir == 90 && this._x == _size_x) {
                 this._dir = -90;
-            } else if (this._dir == 135 && (this._x == 4 || this._y == 4)) {
-                if (this.x() == 4 && this.y() == 4) {
+            } else if (this._dir == 135 && (this._x == _size_x || this._y == _size_y)) {
+                if (this.x() == _size_x && this.y() == _size_y) {
                     this._dir = -45;
-                } else if (this._y == 4) {
+                } else if (this._y == _size_y) {
                     this._dir = 45;
                 } else {
                     this._dir = -135;
                 }
-            } else if (this._dir == 180 && this._y == 4) {
+            } else if (this._dir == 180 && this._y == _size_y) {
                 this._dir = 0;
             } else if (this._dir == -45 && (this._x == 0 || this._y == 0)) {
                 if (this.x() == 0 && this.y() == 0) {
@@ -434,10 +436,10 @@ namespace neopixelGame {
                 }
             } else if (this._dir == -90 && this._x == 0) {
                 this._dir = 90;
-            } else if (this._dir == -135 && (this._x == 0 || this._y == 4)) {
-                if (this._x == 0 && this._y == 4) {
+            } else if (this._dir == -135 && (this._x == 0 || this._y == _size_y)) {
+                if (this._x == 0 && this._y == _size_y) {
                     this._dir = 45;
-                } else if (this._y == 4) {
+                } else if (this._y == _size_y) {
                     this._dir = -45;
                 } else {
                     this._dir = 135;
@@ -527,6 +529,7 @@ namespace neopixelGame {
                 case NeoPixelSpriteProperty.Direction: return this.direction()
                 case NeoPixelSpriteProperty.Brightness: return this.brightness();
                 case NeoPixelSpriteProperty.Blink: return this.blink();
+                case NeoPixelSpriteProperty.RGB: return this.RGB();
                 default: return 0;
             }
         }
@@ -625,7 +628,7 @@ namespace neopixelGame {
         //% weight=19 help=game/is-touching-edge
         //% blockId=game_sprite_touching_edge block="is %sprite|touching edge" blockGap=8
         public isTouchingEdge(): boolean {
-            return this._enabled && (this._x == 0 || this._x == 4 || this._y == 0 || this._y == 4);
+            return this._enabled && (this._x == 0 || this._x == _size_x || this._y == 0 || this._y == _size_y);
         }
 
         /**
@@ -755,26 +758,37 @@ namespace neopixelGame {
         //% parts="ledmatrix"
         public _plot(now: number) {
             let ps = this
-            if (ps._brightness > 0) {
+            if (ps._rgb > 0) {
                 let s = 0;
                 if (ps._blink > 0) {
                     s = Math.floor(now / ps._blink) % 2;
                 }
                 if (s == 0) {
-                    _img.setPixelBrightness(ps._x, ps._y, _img.pixelBrightness(ps._x, ps._y) + ps._brightness);
+                    _strip.setMatrixColor(ps._x, ps._y, ps._rgb) 
+                    // TODO: mix colors similar to _img.pixelBrightness(ps._x, ps._y) + ps._brightness);
                 }
             }
         }
     }
 
+    /**
+     * Sets various NeopixelGame parameters
+     * @param this TODO
+     * @param size_x width of the neopixel game field
+     * @param size_y height of the neopixel game field
+     * @param pin microbit pin driving the neopixel matrix
+     * @param mode neopixel mode (see NeoPixel docs)
+     */
+    //% parts="ledmatrix"
+    function initGame(size_x: number, size_y: number, pin: DigitalPin, mode: NeoPixelMode.RGB): void {
+        _strip = neopixel.create(pin, size_x * size_y, mode)
+        _size_x = size_x
+        _size_y = size_y
+        _strip.setMatrixWidth(size_x)
+    }
+
     function init(): void {
-        if (_img) return;
-        const img = images.createImage(
-            `0 0 0 0 0
-0 0 0 0 0
-0 0 0 0 0
-0 0 0 0 0
-0 0 0 0 0`);
+        if (_strip) return;
         _sprites = (<NeoPixelSprite[]>[]);
         basic.forever(() => {
             basic.pause(30);
@@ -783,7 +797,6 @@ namespace neopixelGame {
                 basic.pause(600);
             }
         });
-        _img = img;
     }
 
     /**
@@ -791,20 +804,16 @@ namespace neopixelGame {
      */
     //% parts="ledmatrix"
     function plot(): void {
-        if (game.isGameOver() || game.isPaused() || !_img || _backgroundAnimation) {
+        if (game.isGameOver() || game.isPaused() || !_strip || _backgroundAnimation) {
             return;
         }
-        // ensure greyscale mode
-        const dm = led.displayMode();
-        if (dm != DisplayMode.Greyscale)
-            led.setDisplayMode(DisplayMode.Greyscale);
         // render sprites
         const now = input.runningTime();
-        _img.clear();
+        _strip.clear();
         for (let k = 0; k < _sprites.length; k++) {
             _sprites[k]._plot(now);
         }
-        _img.plotImage(0);
+        _strip.show();
     }
 
     /**
@@ -816,8 +825,3 @@ namespace neopixelGame {
     }
 
 }
-
-basic.forever(function () {
-	
-})
-
