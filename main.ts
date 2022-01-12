@@ -834,7 +834,6 @@ namespace neopixelGame {
         for (let k = 0; k < _sprites.length; k++) {
             _sprites[k]._plot(now);
         }
-        _strip.easeBrightness()
         _strip.show();
     }
 
